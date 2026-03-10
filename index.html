@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwingCheck — AI Golf Swing Analysis</title>
+    <meta name="description" content="Analyze your golf swing with AI-powered pose detection. Compare against the pros. Get personalized coaching feedback. Free, instant, in your browser.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Playfair+Display:ital,wght@0,700;1,500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-deep: #1a4d2e;
+            --green-mid: #2d7a4f;
+            --green-bright: #34d399;
+            --green-pale: #ecfdf5;
+            --green-wash: #f0faf5;
+            --sand: #faf8f4;
+            --sand-dark: #f0ece4;
+            --text-primary: #1a1a1a;
+            --text-secondary: #5a5a5a;
+            --text-muted: #8a8a8a;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.1);
+            --shadow-glow: 0 0 60px rgba(52,211,153,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-primary);
+            background: var(--sand);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(250, 248, 244, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 12px 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .nav-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--green-deep);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .nav-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-cta {
+            background: var(--green-deep) !important;
+            color: var(--white) !important;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-weight: 600 !important;
+            transition: transform 0.2s, box-shadow 0.2s !important;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 32px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(52,211,153,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(26,77,46,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .hero-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--green-pale);
+            color: var(--green-deep);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 28px;
+            border: 1px solid rgba(45,122,79,0.1);
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--green-bright);
+            border-radius: 50%;
+            animation: pulse-dot 2s ease infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(42px, 5.5vw, 72px);
+            line-height: 1.05;
+            font-weight: 700;
+            letter-spacing: -2px;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease 0.1s both;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--green-mid);
+        }
+
+        .hero-desc {
+            font-size: 18px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            animation: fadeInUp 0.6s ease 0.3s both;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--green-deep);
+            color: var(--white);
+            padding: 16px 32px;
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-primary:hover {
+            background: #15402a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(26,77,46,0.25);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: var(--text-primary);
+            padding: 16px 32px;
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1.5px solid rgba(0,0,0,0.12);
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(0,0,0,0.25);
+            background: var(--white);
+        }
+
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .hero-mockup {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.06);
+            position: relative;
+        }
+
+        .mockup-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .mockup-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mockup-back {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        .mockup-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .mockup-score {
+            background: var(--green-pale);
+            color: var(--green-deep);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .mockup-body {
+            padding: 20px;
+        }
+
+        .mockup-skeleton {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        /* Animated skeleton figure */
+        .skeleton-figure {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .skeleton-figure svg {
+            width: 160px;
+            height: 210px;
+        }
+
+        .skeleton-joint {
+            fill: var(--green-bright);
+            animation: joint-pulse 2s ease infinite;
+        }
+
+        .skeleton-bone {
+            stroke: var(--green-mid);
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            opacity: 0.6;
+        }
+
+        @keyframes joint-pulse {
+            0%, 100% { r: 2.5; opacity: 1; }
+            50% { r: 3.5; opacity: 0.7; }
+        }
+
+        .mockup-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .mockup-metric {
+            background: var(--sand);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .mockup-metric-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--green-deep);
+        }
+
+        .mockup-metric-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .mockup-ai-bar {
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--green-pale) 0%, rgba(52,211,153,0.08) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(45,122,79,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-icon {
+            font-size: 20px;
+        }
+
+        .ai-text {
+            font-size: 13px;
+            color: var(--green-deep);
+            font-weight: 500;
+        }
+
+        /* Floating badges */
+        .float-badge {
+            position: absolute;
+            background: var(--white);
+            padding: 10px 16px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            animation: float-gentle 3s ease infinite;
+            z-index: 3;
+        }
+
+        .float-badge.top-left {
+            top: 20px;
+            left: -30px;
+            animation-delay: 0s;
+        }
+
+        .float-badge.bottom-right {
+            bottom: 40px;
+            right: -20px;
+            animation-delay: 1.5s;
+        }
+
+        .float-badge-icon {
+            font-size: 18px;
+        }
+
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* ===== BACKGROUND VISUALS ===== */
+        .bg-visual {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            z-index: 0;
+        }
+
+        .bg-visual svg {
+            overflow: visible;
+        }
+
+        /* Swing arc paths */
+        .swing-arc {
+            fill: none;
+            stroke: rgba(26, 77, 46, 0.12);
+            stroke-width: 2;
+            stroke-dasharray: 6 8;
+            stroke-linecap: round;
+        }
+
+        .swing-arc.accent {
+            stroke: rgba(52, 211, 153, 0.15);
+            stroke-width: 1.5;
+            stroke-dasharray: 3 6;
+        }
+
+        /* Pose landmark dots */
+        .landmark-dot {
+            fill: rgba(26, 77, 46, 0.10);
+        }
+
+        .landmark-dot.bright {
+            fill: rgba(52, 211, 153, 0.18);
+        }
+
+        .landmark-connection {
+            stroke: rgba(26, 77, 46, 0.07);
+            stroke-width: 1.2;
+        }
+
+        /* Angle measurement lines */
+        .angle-line {
+            stroke: rgba(26, 77, 46, 0.10);
+            stroke-width: 1.5;
+        }
+
+        .angle-arc {
+            fill: none;
+            stroke: rgba(52, 211, 153, 0.14);
+            stroke-width: 1.5;
+        }
+
+        .angle-text {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            fill: rgba(26, 77, 46, 0.16);
+            font-weight: 600;
+        }
+
+        .angle-tick {
+            stroke: rgba(26, 77, 46, 0.08);
+            stroke-width: 1;
+        }
+
+        /* Dark section overrides */
+        .cta-section .swing-arc { stroke: rgba(255,255,255,0.08); }
+        .cta-section .swing-arc.accent { stroke: rgba(52,211,153,0.10); }
+        .cta-section .landmark-dot { fill: rgba(255,255,255,0.06); }
+        .cta-section .landmark-dot.bright { fill: rgba(52,211,153,0.10); }
+        .cta-section .landmark-connection { stroke: rgba(255,255,255,0.05); }
+        .cta-section .angle-line { stroke: rgba(255,255,255,0.08); }
+        .cta-section .angle-arc { stroke: rgba(52,211,153,0.10); }
+        .cta-section .angle-text { fill: rgba(255,255,255,0.10); }
+
+        .how-it-works .swing-arc { stroke: rgba(26,77,46,0.09); }
+        .how-it-works .landmark-dot { fill: rgba(26,77,46,0.08); }
+        .how-it-works .landmark-dot.bright { fill: rgba(52,211,153,0.14); }
+
+        @media (max-width: 900px) {
+            .bg-visual.hide-mobile { display: none; }
+            .bg-visual { opacity: 0.7; }
+        }
+
+        /* ===== BACKGROUND QUOTES ===== */
+        .bg-quote {
+            position: absolute;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 500;
+            color: rgba(26, 77, 46, 0.07);
+            pointer-events: none;
+            user-select: none;
+            white-space: nowrap;
+            z-index: 0;
+            line-height: 1.2;
+        }
+
+        .bg-quote.size-lg { font-size: clamp(28px, 4vw, 52px); }
+        .bg-quote.size-md { font-size: clamp(20px, 3vw, 36px); }
+        .bg-quote.size-sm { font-size: clamp(16px, 2.2vw, 26px); }
+
+        .bg-quote .quote-author {
+            display: block;
+            font-family: 'DM Sans', sans-serif;
+            font-style: normal;
+            font-weight: 600;
+            font-size: 0.4em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 900px) {
+            .bg-quote { opacity: 0.6; }
+            .bg-quote.hide-mobile { display: none; }
+        }
+
+        /* ===== FEATURES ===== */
+        .features {
+            padding: 120px 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--green-mid);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 20px;
+            height: 2px;
+            background: var(--green-bright);
+            border-radius: 2px;
+        }
+
+        .features h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            margin-bottom: 64px;
+            max-width: 600px;
+            line-height: 1.1;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 36px 32px;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--green-bright), var(--green-mid));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-card:hover::after {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--green-pale);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            line-height: 1.65;
+            color: var(--text-secondary);
+        }
+
+        /* ===== HOW IT WORKS ===== */
+        .how-it-works {
+            padding: 120px 32px;
+            background: var(--white);
+        }
+
+        .how-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .how-it-works h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            margin-bottom: 64px;
+            line-height: 1.1;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 48px;
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 36px;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--green-bright), var(--green-mid), var(--green-bright));
+            opacity: 0.2;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 72px;
+            height: 72px;
+            background: var(--sand);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--green-deep);
+            margin: 0 auto 24px;
+            border: 2px solid rgba(0,0,0,0.04);
+            position: relative;
+            z-index: 2;
+        }
+
+        .step h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .step p {
+            font-size: 14px;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        /* ===== GHOST MODE ===== */
+        .ghost-section {
+            padding: 120px 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .ghost-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .ghost-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        .ghost-text h2 em {
+            color: var(--green-mid);
+            font-style: italic;
+        }
+
+        .ghost-text p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 440px;
+        }
+
+        .ghost-visual {
+            position: relative;
+        }
+
+        .ghost-comparison {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .ghost-comparison-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .ghost-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .ghost-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .ghost-dot.user { background: var(--green-mid); }
+        .ghost-dot.pro { background: #d4a843; }
+
+        .ghost-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .ghost-bar-item label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .ghost-bar-track {
+            height: 8px;
+            background: var(--sand);
+            border-radius: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ghost-bar-fill {
+            height: 100%;
+            border-radius: 100px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: width 1.5s ease;
+        }
+
+        .ghost-bar-fill.user { background: var(--green-mid); }
+        .ghost-bar-fill.pro { background: #d4a843; opacity: 0.6; }
+
+        /* ===== CTA / WAITLIST ===== */
+        .cta-section {
+            padding: 120px 32px;
+            background: var(--green-deep);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -150px;
+            right: -150px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(52,211,153,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-inner {
+            max-width: 640px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 4.5vw, 52px);
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: -1.5px;
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .cta-section p {
+            font-size: 17px;
+            color: rgba(255,255,255,0.65);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .waitlist-form {
+            display: flex;
+            gap: 12px;
+            max-width: 480px;
+            margin: 0 auto 16px;
+        }
+
+        .waitlist-form input {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 100px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.08);
+            color: var(--white);
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .waitlist-form input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .waitlist-form input:focus {
+            border-color: var(--green-bright);
+            background: rgba(255,255,255,0.12);
+        }
+
+        .waitlist-form button {
+            padding: 16px 32px;
+            background: var(--green-bright);
+            color: var(--green-deep);
+            border: none;
+            border-radius: 100px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .waitlist-form button:hover {
+            background: #5eead4;
+            transform: translateY(-1px);
+        }
+
+        .waitlist-note {
+            font-size: 13px;
+            color: rgba(255,255,255,0.35);
+        }
+
+        .waitlist-success {
+            display: none;
+            padding: 16px 24px;
+            background: rgba(52,211,153,0.15);
+            border: 1px solid rgba(52,211,153,0.25);
+            border-radius: 16px;
+            color: var(--green-bright);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 48px 32px;
+            background: var(--green-deep);
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+        }
+
+        .footer-logo {
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-socials a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.4);
+            text-decoration: none;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .footer-socials a:hover {
+            background: rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 48px;
+                text-align: center;
+            }
+
+            .hero-desc {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-actions {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .hero-mockup {
+                max-width: 340px;
+            }
+
+            .float-badge { display: none; }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                max-width: 480px;
+                margin: 0 auto;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .steps::before { display: none; }
+
+            .ghost-content {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+
+            .ghost-text { text-align: center; }
+            .ghost-text p { margin-left: auto; margin-right: auto; }
+
+            .waitlist-form {
+                flex-direction: column;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            nav { padding: 12px 20px; }
+            .nav-links a:not(.nav-cta) { display: none; }
+        }
+
+        @media (max-width: 480px) {
+            .hero { padding: 100px 20px 60px; }
+            .features, .ghost-section { padding: 80px 20px; }
+            .how-it-works, .cta-section { padding: 80px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav id="nav">
+        <a href="#" class="nav-logo">
+            <div class="nav-logo-icon">S</div>
+            <span class="nav-logo-text">SwingCheck</span>
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how">How It Works</a>
+            <a href="#waitlist" class="nav-cta">Get Early Access</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <!-- Swing arc - top right -->
+        <div class="bg-visual" style="top: 5%; right: 2%;">
+            <svg width="450" height="450" viewBox="0 0 300 300">
+                <path d="M 280,280 Q 140,20 20,120" class="swing-arc"/>
+                <path d="M 290,270 Q 155,30 35,125" class="swing-arc accent"/>
+                <circle cx="280" cy="280" r="3" class="landmark-dot bright"/>
+                <circle cx="20" cy="120" r="3.5" class="landmark-dot"/>
+            </svg>
+        </div>
+
+        <!-- Pose landmark constellation - bottom left -->
+        <div class="bg-visual hide-mobile" style="bottom: 5%; left: 2%;">
+            <svg width="280" height="360" viewBox="0 0 200 260">
+                <!-- Head -->
+                <circle cx="100" cy="20" r="3" class="landmark-dot bright"/>
+                <!-- Shoulders -->
+                <circle cx="70" cy="60" r="3.5" class="landmark-dot"/>
+                <circle cx="130" cy="55" r="3.5" class="landmark-dot"/>
+                <line x1="70" y1="60" x2="130" y2="55" class="landmark-connection"/>
+                <line x1="100" y1="20" x2="100" y2="58" class="landmark-connection"/>
+                <!-- Spine -->
+                <line x1="100" y1="58" x2="95" y2="130" class="landmark-connection"/>
+                <!-- Hips -->
+                <circle cx="78" cy="130" r="3.5" class="landmark-dot"/>
+                <circle cx="112" cy="128" r="3.5" class="landmark-dot"/>
+                <line x1="78" y1="130" x2="112" y2="128" class="landmark-connection"/>
+                <!-- Arms -->
+                <circle cx="48" cy="85" r="3" class="landmark-dot"/>
+                <circle cx="152" cy="78" r="3" class="landmark-dot"/>
+                <line x1="70" y1="60" x2="48" y2="85" class="landmark-connection"/>
+                <line x1="130" y1="55" x2="152" y2="78" class="landmark-connection"/>
+                <!-- Wrists -->
+                <circle cx="35" cy="65" r="2" class="landmark-dot bright"/>
+                <circle cx="160" cy="95" r="2" class="landmark-dot bright"/>
+                <line x1="48" y1="85" x2="35" y2="65" class="landmark-connection"/>
+                <line x1="152" y1="78" x2="160" y2="95" class="landmark-connection"/>
+                <!-- Knees -->
+                <circle cx="72" cy="175" r="3" class="landmark-dot"/>
+                <circle cx="118" cy="173" r="3" class="landmark-dot"/>
+                <line x1="78" y1="130" x2="72" y2="175" class="landmark-connection"/>
+                <line x1="112" y1="128" x2="118" y2="173" class="landmark-connection"/>
+                <!-- Ankles -->
+                <circle cx="65" cy="225" r="3" class="landmark-dot"/>
+                <circle cx="125" cy="222" r="3" class="landmark-dot"/>
+                <line x1="72" y1="175" x2="65" y2="225" class="landmark-connection"/>
+                <line x1="118" y1="173" x2="125" y2="222" class="landmark-connection"/>
+            </svg>
+        </div>
+
+        <!-- Angle measurement - mid right -->
+        <div class="bg-visual hide-mobile" style="top: 45%; right: 48%;">
+            <svg width="180" height="180" viewBox="0 0 120 120">
+                <line x1="20" y1="100" x2="20" y2="20" class="angle-line"/>
+                <line x1="20" y1="100" x2="110" y2="60" class="angle-line"/>
+                <path d="M 20,55 A 45,45 0 0,1 65,80" class="angle-arc"/>
+                <text x="48" y="65" class="angle-text">45°</text>
+                <!-- Small ticks -->
+                <line x1="17" y1="40" x2="23" y2="40" class="angle-tick"/>
+                <line x1="17" y1="60" x2="23" y2="60" class="angle-tick"/>
+                <line x1="17" y1="80" x2="23" y2="80" class="angle-tick"/>
+            </svg>
+        </div>
+        <div class="bg-quote size-lg" style="top: 15%; left: -2%; transform: rotate(-4deg);">
+            "The most important shot in golf is the next one."
+            <span class="quote-author">— Ben Hogan</span>
+        </div>
+        <div class="bg-quote size-md hide-mobile" style="bottom: 12%; right: 2%; transform: rotate(2deg);">
+            "You can always become better."
+            <span class="quote-author">— Tiger Woods</span>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <div class="hero-badge-dot"></div>
+                    Now in beta — free to use
+                </div>
+                <h1>Your personal <em>AI golf coach</em></h1>
+                <p class="hero-desc">
+                    Upload a swing video and get instant AI-powered analysis with pose detection, 
+                    pro comparisons, and personalized coaching — all in your browser, completely free.
+                </p>
+                <div class="hero-actions">
+                    <a href="#waitlist" class="btn-primary">
+                        Join the Waitlist →
+                    </a>
+                    <a href="#" class="btn-secondary" id="tryNowBtn">
+                        Try It Now
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="float-badge top-left">
+                    <span class="float-badge-icon">🎯</span>
+                    Shoulder Turn: 92°
+                </div>
+                <div class="float-badge bottom-right">
+                    <span class="float-badge-icon">🤖</span>
+                    AI Feedback Ready
+                </div>
+
+                <div class="hero-mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-header-left">
+                            <span class="mockup-back">‹</span>
+                            <span class="mockup-title">Analysis</span>
+                        </div>
+                        <span class="mockup-score">★ 82</span>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="mockup-skeleton">
+                            <div class="skeleton-figure">
+                                <svg viewBox="0 0 160 210" fill="none">
+                                    <!-- Head -->
+                                    <circle cx="78" cy="32" r="7" fill="none" stroke="#2d7a4f" stroke-width="1.2" opacity="0.25"/>
+                                    <!-- Neck -->
+                                    <line x1="78" y1="39" x2="78" y2="48" class="skeleton-bone"/>
+                                    <!-- Spine -->
+                                    <line x1="78" y1="48" x2="74" y2="100" class="skeleton-bone"/>
+                                    <!-- Shoulders -->
+                                    <line x1="56" y1="52" x2="100" y2="46" class="skeleton-bone"/>
+                                    <!-- Hips -->
+                                    <line x1="62" y1="100" x2="86" y2="99" class="skeleton-bone"/>
+                                    <!-- Left arm (lead - extended up in backswing) -->
+                                    <line x1="56" y1="52" x2="42" y2="72" class="skeleton-bone"/>
+                                    <line x1="42" y1="72" x2="30" y2="56" class="skeleton-bone"/>
+                                    <!-- Right arm (trail - folded) -->
+                                    <line x1="100" y1="46" x2="106" y2="68" class="skeleton-bone"/>
+                                    <line x1="106" y1="68" x2="34" y2="48" class="skeleton-bone"/>
+                                    <!-- Left leg -->
+                                    <line x1="62" y1="100" x2="56" y2="142" class="skeleton-bone"/>
+                                    <line x1="56" y1="142" x2="52" y2="184" class="skeleton-bone"/>
+                                    <line x1="52" y1="184" x2="44" y2="192" class="skeleton-bone"/>
+                                    <!-- Right leg -->
+                                    <line x1="86" y1="99" x2="90" y2="140" class="skeleton-bone"/>
+                                    <line x1="90" y1="140" x2="92" y2="182" class="skeleton-bone"/>
+                                    <line x1="92" y1="182" x2="100" y2="190" class="skeleton-bone"/>
+                                    <!-- Joints -->
+                                    <circle cx="78" cy="48" r="2.5" class="skeleton-joint"/>
+                                    <circle cx="56" cy="52" r="2.5" class="skeleton-joint"/>
+                                    <circle cx="100" cy="46" r="2.5" class="skeleton-joint"/>
+                                    <circle cx="42" cy="72" r="2" class="skeleton-joint"/>
+                                    <circle cx="106" cy="68" r="2" class="skeleton-joint"/>
+                                    <circle cx="30" cy="56" r="2" class="skeleton-joint"/>
+                                    <circle cx="34" cy="48" r="2" class="skeleton-joint"/>
+                                    <circle cx="62" cy="100" r="2.5" class="skeleton-joint"/>
+                                    <circle cx="86" cy="99" r="2.5" class="skeleton-joint"/>
+                                    <circle cx="56" cy="142" r="2" class="skeleton-joint"/>
+                                    <circle cx="90" cy="140" r="2" class="skeleton-joint"/>
+                                    <circle cx="52" cy="184" r="2" class="skeleton-joint"/>
+                                    <circle cx="92" cy="182" r="2" class="skeleton-joint"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="mockup-metrics">
+                            <div class="mockup-metric">
+                                <div class="mockup-metric-value">3.1</div>
+                                <div class="mockup-metric-label">Tempo</div>
+                            </div>
+                            <div class="mockup-metric">
+                                <div class="mockup-metric-value">92°</div>
+                                <div class="mockup-metric-label">Shoulder</div>
+                            </div>
+                            <div class="mockup-metric">
+                                <div class="mockup-metric-value">48°</div>
+                                <div class="mockup-metric-label">X-Factor</div>
+                            </div>
+                        </div>
+                        <div class="mockup-ai-bar">
+                            <span class="ai-icon">🤖</span>
+                            <span class="ai-text">Great coil at the top — try maintaining spine angle through impact</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="features" style="position: relative;">
+        <!-- Swing arc - left side -->
+        <div class="bg-visual" style="top: 10%; left: -5%;">
+            <svg width="380" height="500" viewBox="0 0 250 350">
+                <path d="M 230,340 Q 60,180 40,20" class="swing-arc"/>
+                <path d="M 240,330 Q 70,175 50,15" class="swing-arc accent"/>
+                <path d="M 220,345 Q 50,185 30,25" class="swing-arc accent"/>
+            </svg>
+        </div>
+
+        <!-- Angle measurement - right side -->
+        <div class="bg-visual hide-mobile" style="bottom: 20%; right: 2%;">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+                <line x1="20" y1="120" x2="120" y2="120" class="angle-line"/>
+                <line x1="20" y1="120" x2="70" y2="20" class="angle-line"/>
+                <path d="M 60,120 A 40,40 0 0,1 42,85" class="angle-arc"/>
+                <text x="55" y="102" class="angle-text">62°</text>
+                <circle cx="20" cy="120" r="2" class="landmark-dot bright"/>
+            </svg>
+        </div>
+        <div class="bg-quote size-md" style="top: 8%; right: -1%; transform: rotate(3deg);">
+            "Don't be too proud to take a lesson. I'm not."
+            <span class="quote-author">— Jack Nicklaus</span>
+        </div>
+        <div class="bg-quote size-sm hide-mobile" style="bottom: 5%; left: 0%; transform: rotate(-2deg);">
+            "Correct one fault at a time."
+            <span class="quote-author">— Sam Snead</span>
+        </div>
+        <div class="reveal">
+            <div class="section-label">Features</div>
+            <h2>Everything you need to improve your swing</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">📐</div>
+                <h3>AI Pose Detection</h3>
+                <p>MediaPipe-powered pose estimation tracks 33 body landmarks in real time, extracting shoulder turn, hip rotation, x-factor, and tempo from every frame.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">👻</div>
+                <h3>Ghost Mode</h3>
+                <p>Overlay a pro's skeleton on your swing to see exactly where your positions differ. Compare against Tiger Woods with real extracted pose data.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Coaching</h3>
+                <p>Gemini AI analyzes your raw coordinate data and gives personalized feedback with specific drills to fix your biggest issues.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">📊</div>
+                <h3>Detailed Metrics</h3>
+                <p>Shoulder turn, hip rotation, x-factor, tempo ratio, swing plane angle, and an overall score — all calculated from your video automatically.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🎬</div>
+                <h3>Frame-by-Frame Replay</h3>
+                <p>Scrub through your swing frame by frame with skeleton overlay. Pause at address, top, impact, and finish to study your positions.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">✏️</div>
+                <h3>Drawing Tools</h3>
+                <p>Annotate directly on your swing with lines, circles, and angles. Mark reference lines, highlight issues, and save annotated frames.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works" id="how" style="position: relative; overflow: hidden;">
+        <!-- Scattered landmark dots - right side -->
+        <div class="bg-visual" style="top: 10%; right: 3%;">
+            <svg width="180" height="400" viewBox="0 0 180 400">
+                <circle cx="30" cy="40" r="3" class="landmark-dot"/>
+                <circle cx="90" cy="25" r="2.5" class="landmark-dot bright"/>
+                <circle cx="150" cy="50" r="3" class="landmark-dot"/>
+                <circle cx="60" cy="100" r="2.5" class="landmark-dot"/>
+                <circle cx="120" cy="90" r="2" class="landmark-dot bright"/>
+                <circle cx="40" cy="160" r="3" class="landmark-dot"/>
+                <circle cx="100" cy="150" r="2.5" class="landmark-dot"/>
+                <circle cx="160" cy="170" r="2.5" class="landmark-dot bright"/>
+                <circle cx="70" cy="230" r="3" class="landmark-dot"/>
+                <circle cx="130" cy="220" r="2.5" class="landmark-dot"/>
+                <circle cx="20" cy="280" r="2" class="landmark-dot bright"/>
+                <circle cx="110" cy="300" r="3" class="landmark-dot"/>
+                <circle cx="150" cy="340" r="2.5" class="landmark-dot"/>
+                <circle cx="50" cy="360" r="2" class="landmark-dot bright"/>
+                <!-- Faint connections between some dots -->
+                <line x1="30" y1="40" x2="90" y2="25" class="landmark-connection"/>
+                <line x1="90" y1="25" x2="150" y2="50" class="landmark-connection"/>
+                <line x1="120" y1="90" x2="160" y2="170" class="landmark-connection"/>
+                <line x1="40" y1="160" x2="70" y2="230" class="landmark-connection"/>
+                <line x1="20" y1="280" x2="50" y2="360" class="landmark-connection"/>
+            </svg>
+        </div>
+
+        <!-- Swing arc - bottom left -->
+        <div class="bg-visual hide-mobile" style="bottom: 5%; left: -3%;">
+            <svg width="200" height="200" viewBox="0 0 200 200">
+                <path d="M 180,180 Q 80,30 10,80" class="swing-arc"/>
+                <circle cx="180" cy="180" r="2.5" class="landmark-dot bright"/>
+            </svg>
+        </div>
+        <div class="bg-quote size-lg hide-mobile" style="top: 20%; left: -3%; transform: rotate(-3deg);">
+            "The more I practice, the luckier I get."
+            <span class="quote-author">— Gary Player</span>
+        </div>
+        <div class="how-inner">
+            <div class="reveal">
+                <div class="section-label">How It Works</div>
+                <h2>Three steps to a better swing</h2>
+            </div>
+            <div class="steps">
+                <div class="step reveal">
+                    <div class="step-number">1</div>
+                    <h3>Record Your Swing</h3>
+                    <p>Film your swing from face-on or down the line. Any phone camera works — no special equipment needed.</p>
+                </div>
+                <div class="step reveal">
+                    <div class="step-number">2</div>
+                    <h3>Upload & Analyze</h3>
+                    <p>Drop your video into SwingCheck. AI pose detection finds your swing, extracts key positions, and calculates metrics in seconds.</p>
+                </div>
+                <div class="step reveal">
+                    <div class="step-number">3</div>
+                    <h3>Get Feedback</h3>
+                    <p>Review your score, compare against the pros in ghost mode, and get AI-powered coaching tips with specific drills to practice.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GHOST MODE SECTION -->
+    <section class="ghost-section" style="position: relative; overflow: hidden;">
+        <!-- Dual swing arcs - overlapping like ghost comparison -->
+        <div class="bg-visual hide-mobile" style="bottom: 10%; left: 0%;">
+            <svg width="280" height="280" viewBox="0 0 280 280">
+                <path d="M 260,270 Q 120,10 10,100" class="swing-arc"/>
+                <path d="M 255,275 Q 130,25 25,110" class="swing-arc" style="stroke: rgba(212,168,67,0.04);"/>
+                <circle cx="260" cy="270" r="2.5" class="landmark-dot bright"/>
+                <circle cx="255" cy="275" r="3.5" class="landmark-dot" style="fill: rgba(212,168,67,0.06);"/>
+            </svg>
+        </div>
+
+        <!-- Angle measurement - spine angle -->
+        <div class="bg-visual" style="top: 20%; right: 3%;">
+            <svg width="100" height="150" viewBox="0 0 100 150">
+                <line x1="50" y1="10" x2="50" y2="140" class="angle-line"/>
+                <line x1="50" y1="140" x2="50" y2="10" class="angle-line" style="stroke-dasharray: 4 6; opacity: 0.5;"/>
+                <line x1="50" y1="10" x2="85" y2="50" class="angle-line"/>
+                <path d="M 50,40 A 30,30 0 0,1 67,33" class="angle-arc"/>
+                <text x="62" y="48" class="angle-text">12°</text>
+                <!-- Tick marks along spine -->
+                <line x1="46" y1="40" x2="54" y2="40" class="angle-tick"/>
+                <line x1="46" y1="70" x2="54" y2="70" class="angle-tick"/>
+                <line x1="46" y1="100" x2="54" y2="100" class="angle-tick"/>
+                <line x1="46" y1="130" x2="54" y2="130" class="angle-tick"/>
+            </svg>
+        </div>
+        <div class="bg-quote size-md" style="top: 5%; right: 0%; transform: rotate(2deg);">
+            "Reverse every natural instinct and you will<br>have a perfect golf swing."
+            <span class="quote-author">— Ben Hogan</span>
+        </div>
+        <div class="ghost-content">
+            <div class="ghost-text reveal">
+                <div class="section-label">Ghost Mode</div>
+                <h2>Swing like <em>Tiger</em></h2>
+                <p>Ghost mode overlays a pro's real skeleton data on your swing, scaled to your body proportions. See exactly where your positions differ at address, top, impact, and finish.</p>
+                <a href="#waitlist" class="btn-primary">Try Ghost Mode →</a>
+            </div>
+            <div class="ghost-visual reveal">
+                <div class="ghost-comparison">
+                    <div class="ghost-comparison-header">
+                        <div class="ghost-label">
+                            <div class="ghost-dot user"></div>
+                            Your Swing
+                        </div>
+                        <div class="ghost-label">
+                            <div class="ghost-dot pro"></div>
+                            Tiger Woods
+                        </div>
+                    </div>
+                    <div class="ghost-bars">
+                        <div class="ghost-bar-item">
+                            <label>Shoulder Turn</label>
+                            <div class="ghost-bar-track">
+                                <div class="ghost-bar-fill pro" style="width: 92%;" data-width="92"></div>
+                                <div class="ghost-bar-fill user" style="width: 78%;" data-width="78"></div>
+                            </div>
+                        </div>
+                        <div class="ghost-bar-item">
+                            <label>Hip Rotation</label>
+                            <div class="ghost-bar-track">
+                                <div class="ghost-bar-fill pro" style="width: 45%;" data-width="45"></div>
+                                <div class="ghost-bar-fill user" style="width: 52%;" data-width="52"></div>
+                            </div>
+                        </div>
+                        <div class="ghost-bar-item">
+                            <label>X-Factor</label>
+                            <div class="ghost-bar-track">
+                                <div class="ghost-bar-fill pro" style="width: 85%;" data-width="85"></div>
+                                <div class="ghost-bar-fill user" style="width: 62%;" data-width="62"></div>
+                            </div>
+                        </div>
+                        <div class="ghost-bar-item">
+                            <label>Tempo Ratio</label>
+                            <div class="ghost-bar-track">
+                                <div class="ghost-bar-fill pro" style="width: 75%;" data-width="75"></div>
+                                <div class="ghost-bar-fill user" style="width: 70%;" data-width="70"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA / WAITLIST -->
+    <section class="cta-section" id="waitlist">
+        <!-- Large swing arc -->
+        <div class="bg-visual" style="top: -10%; right: -8%;">
+            <svg width="550" height="550" viewBox="0 0 400 400">
+                <path d="M 380,380 Q 200,20 20,160" class="swing-arc"/>
+                <path d="M 370,390 Q 190,30 10,170" class="swing-arc accent"/>
+            </svg>
+        </div>
+
+        <!-- Constellation dots -->
+        <div class="bg-visual hide-mobile" style="bottom: 10%; left: 5%;">
+            <svg width="200" height="200" viewBox="0 0 200 200">
+                <circle cx="20" cy="30" r="3" class="landmark-dot"/>
+                <circle cx="80" cy="15" r="2.5" class="landmark-dot bright"/>
+                <circle cx="140" cy="40" r="3" class="landmark-dot"/>
+                <circle cx="50" cy="80" r="1.5" class="landmark-dot bright"/>
+                <circle cx="110" cy="70" r="3" class="landmark-dot"/>
+                <circle cx="170" cy="90" r="2.5" class="landmark-dot bright"/>
+                <circle cx="30" cy="130" r="3" class="landmark-dot"/>
+                <circle cx="90" cy="140" r="2.5" class="landmark-dot"/>
+                <circle cx="160" cy="160" r="2" class="landmark-dot bright"/>
+                <line x1="20" y1="30" x2="80" y2="15" class="landmark-connection"/>
+                <line x1="80" y1="15" x2="140" y2="40" class="landmark-connection"/>
+                <line x1="50" y1="80" x2="110" y2="70" class="landmark-connection"/>
+                <line x1="110" y1="70" x2="170" y2="90" class="landmark-connection"/>
+                <line x1="30" y1="130" x2="90" y2="140" class="landmark-connection"/>
+            </svg>
+        </div>
+        <div class="bg-quote size-lg hide-mobile" style="top: 15%; left: -2%; transform: rotate(-3deg); color: rgba(255,255,255,0.07);">
+            "Golf is deceptively simple and endlessly complicated."
+            <span class="quote-author">— Arnold Palmer</span>
+        </div>
+        <div class="cta-inner reveal">
+            <h2>Ready to improve your swing?</h2>
+            <p>Join the waitlist for early access, or try SwingCheck right now — completely free, no account needed.</p>
+            <div class="waitlist-form" id="waitlistForm">
+                <input type="email" id="emailInput" placeholder="Enter your email" required>
+                <button type="button" id="waitlistBtn">Join Waitlist</button>
+            </div>
+            <div class="waitlist-success" id="waitlistSuccess">
+                ✓ You're on the list! We'll be in touch soon.
+            </div>
+            <p class="waitlist-note">No spam. We'll only email you when SwingCheck is ready.</p>
+            <div style="margin-top: 24px;">
+                <a href="#" class="btn-secondary" id="tryNowBtn2" style="color: white; border-color: rgba(255,255,255,0.2);">
+                    Or Try It Now — Free →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">S</div>
+                <span>SwingCheck © 2025</span>
+            </div>
+            <div class="footer-socials">
+                <a href="https://tiktok.com/@swingcheckv13" target="_blank" title="TikTok" aria-label="TikTok">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.78a8.18 8.18 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.21z"/>
+                    </svg>
+                </a>
+                <a href="https://instagram.com/swingcheckv13" target="_blank" title="Instagram" aria-label="Instagram">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Nav scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Scroll reveal
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, i * 80);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        reveals.forEach(el => observer.observe(el));
+
+        // Waitlist form
+        // ⚠️ REPLACE THIS URL with your Google Apps Script deployment URL
+        const WAITLIST_URL = 'https://script.google.com/macros/s/AKfycbwWPRYeU-fHR-pPFNMuqNpR-aNRGMXUoFer4MMEN4xCoOOGhs1j6S42A-CRRbgW-8ul6g/exec';
+
+        document.getElementById('waitlistBtn').addEventListener('click', () => {
+            const email = document.getElementById('emailInput').value.trim();
+            const btn = document.getElementById('waitlistBtn');
+            const input = document.getElementById('emailInput');
+            
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                input.style.borderColor = '#f87171';
+                input.placeholder = 'Please enter a valid email';
+                return;
+            }
+            
+            // Show loading state
+            btn.disabled = true;
+            btn.textContent = 'Joining...';
+            input.style.borderColor = '';
+            
+            try {
+                if (WAITLIST_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                    // Use form submit approach to avoid CORS issues with Apps Script
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = WAITLIST_URL;
+                    form.target = 'hidden_iframe';
+                    
+                    const emailField = document.createElement('input');
+                    emailField.type = 'hidden';
+                    emailField.name = 'email';
+                    emailField.value = email;
+                    form.appendChild(emailField);
+                    
+                    // Create hidden iframe to catch the redirect
+                    let iframe = document.getElementById('hidden_iframe');
+                    if (!iframe) {
+                        iframe = document.createElement('iframe');
+                        iframe.name = 'hidden_iframe';
+                        iframe.id = 'hidden_iframe';
+                        iframe.style.display = 'none';
+                        document.body.appendChild(iframe);
+                    }
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                    form.remove();
+                }
+                
+                document.getElementById('waitlistForm').style.display = 'none';
+                document.getElementById('waitlistSuccess').style.display = 'block';
+                document.querySelector('.waitlist-note').style.display = 'none';
+            } catch (err) {
+                // Even if fetch fails with no-cors, the request likely went through
+                document.getElementById('waitlistForm').style.display = 'none';
+                document.getElementById('waitlistSuccess').style.display = 'block';
+                document.querySelector('.waitlist-note').style.display = 'none';
+            }
+        });
+
+        // Ghost mode bar animation on scroll
+        const ghostObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.querySelectorAll('.ghost-bar-fill').forEach(bar => {
+                        const width = bar.getAttribute('data-width');
+                        bar.style.width = '0%';
+                        setTimeout(() => {
+                            bar.style.width = width + '%';
+                        }, 200);
+                    });
+                    ghostObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.ghost-comparison').forEach(el => ghostObserver.observe(el));
+    </script>
+</body>
+</html>
