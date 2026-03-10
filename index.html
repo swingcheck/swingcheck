@@ -353,8 +353,8 @@
         }
 
         .skeleton-figure svg {
-            width: 160px;
-            height: 210px;
+            width: 170px;
+            height: 220px;
         }
 
         .skeleton-joint {
@@ -370,8 +370,8 @@
         }
 
         @keyframes joint-pulse {
-            0%, 100% { r: 2.5; opacity: 1; }
-            50% { r: 3.5; opacity: 0.7; }
+            0%, 100% { r: 2; opacity: 1; }
+            50% { r: 3; opacity: 0.7; }
         }
 
         .mockup-metrics {
@@ -1026,6 +1026,248 @@
             color: rgba(255,255,255,0.8);
         }
 
+        /* ===== BUILDER STORY ===== */
+        .builder-section {
+            padding: 100px 32px;
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .builder-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .builder-avatar {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--green-pale) 0%, rgba(52,211,153,0.15) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 24px;
+            border: 2px solid rgba(45,122,79,0.1);
+        }
+
+        .builder-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 3.5vw, 40px);
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+            line-height: 1.15;
+        }
+
+        .builder-section h2 em {
+            color: var(--green-mid);
+            font-style: italic;
+        }
+
+        .builder-desc {
+            font-size: 16px;
+            line-height: 1.75;
+            color: var(--text-secondary);
+            max-width: 580px;
+            margin: 0 auto 32px;
+        }
+
+        .builder-tags {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .builder-tag {
+            background: var(--sand);
+            color: var(--text-secondary);
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        /* ===== ROADMAP ===== */
+        .roadmap-section {
+            padding: 120px 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .roadmap-inner {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .roadmap-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            margin-bottom: 56px;
+            line-height: 1.1;
+        }
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .roadmap-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 32px 28px;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .roadmap-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .roadmap-card.now::before { background: var(--green-bright); }
+        .roadmap-card.next::before { background: var(--green-mid); opacity: 0.5; }
+        .roadmap-card.later::before { background: var(--sand-dark); }
+
+        .roadmap-phase {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+
+        .roadmap-card.now .roadmap-phase { color: var(--green-bright); }
+        .roadmap-card.next .roadmap-phase { color: var(--green-mid); }
+        .roadmap-card.later .roadmap-phase { color: var(--text-muted); }
+
+        .roadmap-card h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .roadmap-items {
+            list-style: none;
+            padding: 0;
+        }
+
+        .roadmap-items li {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .roadmap-items li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 13px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green-bright);
+            opacity: 0.5;
+        }
+
+        /* ===== FAQ ===== */
+        .faq-section {
+            padding: 120px 32px;
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .faq-inner {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .faq-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            margin-bottom: 48px;
+            line-height: 1.1;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            padding: 24px 0;
+        }
+
+        .faq-item:first-child {
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            gap: 16px;
+        }
+
+        .faq-question h3 {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+        }
+
+        .faq-toggle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--sand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--text-muted);
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .faq-item.open .faq-toggle {
+            transform: rotate(45deg);
+            background: var(--green-pale);
+            color: var(--green-mid);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, padding 0.35s ease;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 200px;
+            padding-top: 14px;
+        }
+
+        .faq-answer p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
         /* ===== ANIMATIONS ===== */
         @keyframes fadeInUp {
             from {
@@ -1107,6 +1349,16 @@
                 gap: 24px;
             }
 
+            .roadmap-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+
+            .builder-section, .roadmap-section, .faq-section {
+                padding: 80px 20px;
+            }
+
             nav { padding: 12px 20px; }
             .nav-links a:not(.nav-cta) { display: none; }
         }
@@ -1129,6 +1381,7 @@
         <div class="nav-links">
             <a href="#features">Features</a>
             <a href="#how">How It Works</a>
+            <a href="#faq">FAQ</a>
             <a href="#waitlist" class="nav-cta">Get Early Access</a>
         </div>
     </nav>
@@ -1205,6 +1458,10 @@
             "You can always become better."
             <span class="quote-author">— Tiger Woods</span>
         </div>
+        <div class="bg-quote size-sm hide-mobile" style="top: 40%; left: 1%; transform: rotate(1deg);">
+            "You can talk to a fade but a hook won't listen."
+            <span class="quote-author">— Lee Trevino</span>
+        </div>
         <div class="hero-content">
             <div class="hero-text">
                 <div class="hero-badge">
@@ -1248,44 +1505,44 @@
                         <div class="mockup-skeleton">
                             <div class="skeleton-figure">
                                 <svg viewBox="0 0 160 210" fill="none">
-                                    <!-- Head -->
-                                    <circle cx="78" cy="32" r="7" fill="none" stroke="#2d7a4f" stroke-width="1.2" opacity="0.25"/>
-                                    <!-- Neck -->
-                                    <line x1="78" y1="39" x2="78" y2="48" class="skeleton-bone"/>
-                                    <!-- Spine -->
-                                    <line x1="78" y1="48" x2="74" y2="100" class="skeleton-bone"/>
-                                    <!-- Shoulders -->
-                                    <line x1="56" y1="52" x2="100" y2="46" class="skeleton-bone"/>
-                                    <!-- Hips -->
-                                    <line x1="62" y1="100" x2="86" y2="99" class="skeleton-bone"/>
-                                    <!-- Left arm (lead - extended up in backswing) -->
-                                    <line x1="56" y1="52" x2="42" y2="72" class="skeleton-bone"/>
-                                    <line x1="42" y1="72" x2="30" y2="56" class="skeleton-bone"/>
-                                    <!-- Right arm (trail - folded) -->
-                                    <line x1="100" y1="46" x2="106" y2="68" class="skeleton-bone"/>
-                                    <line x1="106" y1="68" x2="34" y2="48" class="skeleton-bone"/>
-                                    <!-- Left leg -->
-                                    <line x1="62" y1="100" x2="56" y2="142" class="skeleton-bone"/>
-                                    <line x1="56" y1="142" x2="52" y2="184" class="skeleton-bone"/>
-                                    <line x1="52" y1="184" x2="44" y2="192" class="skeleton-bone"/>
-                                    <!-- Right leg -->
-                                    <line x1="86" y1="99" x2="90" y2="140" class="skeleton-bone"/>
-                                    <line x1="90" y1="140" x2="92" y2="182" class="skeleton-bone"/>
-                                    <line x1="92" y1="182" x2="100" y2="190" class="skeleton-bone"/>
+                                    <!-- Head - slightly tilted, looking at ball -->
+                                    <circle cx="76" cy="22" r="12" fill="rgba(45,122,79,0.06)" stroke="#2d7a4f" stroke-width="1.2" opacity="0.5"/>
+                                    <!-- Neck - slight angle -->
+                                    <line x1="76" y1="34" x2="78" y2="44" class="skeleton-bone"/>
+                                    <!-- Spine - tilted slightly right (spine tilt away from target) -->
+                                    <line x1="78" y1="44" x2="82" y2="98" class="skeleton-bone"/>
+                                    <!-- Shoulders - left slightly higher (natural tilt from grip) -->
+                                    <line x1="58" y1="47" x2="102" y2="51" class="skeleton-bone"/>
+                                    <!-- Hips - slightly offset -->
+                                    <line x1="68" y1="99" x2="96" y2="97" class="skeleton-bone"/>
+                                    <!-- Left arm - slightly straighter, hanging natural -->
+                                    <line x1="58" y1="47" x2="52" y2="72" class="skeleton-bone"/>
+                                    <line x1="52" y1="72" x2="74" y2="95" class="skeleton-bone"/>
+                                    <!-- Right arm - slightly more bent at elbow -->
+                                    <line x1="102" y1="51" x2="108" y2="74" class="skeleton-bone"/>
+                                    <line x1="108" y1="74" x2="84" y2="93" class="skeleton-bone"/>
+                                    <!-- Hands together (grip) - slightly ahead of center -->
+                                    <circle cx="79" cy="94" r="2.5" class="skeleton-joint" style="fill: var(--green-bright); opacity: 0.8;"/>
+                                    <!-- Left leg - slightly more flex, weight balanced -->
+                                    <line x1="68" y1="99" x2="56" y2="136" class="skeleton-bone"/>
+                                    <line x1="56" y1="136" x2="52" y2="173" class="skeleton-bone"/>
+                                    <line x1="52" y1="173" x2="44" y2="181" class="skeleton-bone"/>
+                                    <!-- Right leg - slightly straighter -->
+                                    <line x1="96" y1="97" x2="108" y2="135" class="skeleton-bone"/>
+                                    <line x1="108" y1="135" x2="112" y2="172" class="skeleton-bone"/>
+                                    <line x1="112" y1="172" x2="120" y2="180" class="skeleton-bone"/>
                                     <!-- Joints -->
-                                    <circle cx="78" cy="48" r="2.5" class="skeleton-joint"/>
-                                    <circle cx="56" cy="52" r="2.5" class="skeleton-joint"/>
-                                    <circle cx="100" cy="46" r="2.5" class="skeleton-joint"/>
-                                    <circle cx="42" cy="72" r="2" class="skeleton-joint"/>
-                                    <circle cx="106" cy="68" r="2" class="skeleton-joint"/>
-                                    <circle cx="30" cy="56" r="2" class="skeleton-joint"/>
-                                    <circle cx="34" cy="48" r="2" class="skeleton-joint"/>
-                                    <circle cx="62" cy="100" r="2.5" class="skeleton-joint"/>
-                                    <circle cx="86" cy="99" r="2.5" class="skeleton-joint"/>
-                                    <circle cx="56" cy="142" r="2" class="skeleton-joint"/>
-                                    <circle cx="90" cy="140" r="2" class="skeleton-joint"/>
-                                    <circle cx="52" cy="184" r="2" class="skeleton-joint"/>
-                                    <circle cx="92" cy="182" r="2" class="skeleton-joint"/>
+                                    <circle cx="78" cy="44" r="2" class="skeleton-joint"/>
+                                    <circle cx="58" cy="47" r="2" class="skeleton-joint"/>
+                                    <circle cx="102" cy="51" r="2" class="skeleton-joint"/>
+                                    <circle cx="52" cy="72" r="1.8" class="skeleton-joint"/>
+                                    <circle cx="108" cy="74" r="1.8" class="skeleton-joint"/>
+                                    <circle cx="68" cy="99" r="2" class="skeleton-joint"/>
+                                    <circle cx="96" cy="97" r="2" class="skeleton-joint"/>
+                                    <circle cx="56" cy="136" r="1.8" class="skeleton-joint"/>
+                                    <circle cx="108" cy="135" r="1.8" class="skeleton-joint"/>
+                                    <circle cx="52" cy="173" r="1.8" class="skeleton-joint"/>
+                                    <circle cx="112" cy="172" r="1.8" class="skeleton-joint"/>
                                 </svg>
                             </div>
                         </div>
@@ -1341,6 +1598,10 @@
         <div class="bg-quote size-sm hide-mobile" style="bottom: 5%; left: 0%; transform: rotate(-2deg);">
             "Correct one fault at a time."
             <span class="quote-author">— Sam Snead</span>
+        </div>
+        <div class="bg-quote size-md hide-mobile" style="top: 45%; left: -3%; transform: rotate(-3deg);">
+            "Golf is a game of bad shots. The winners make fewer of them."
+            <span class="quote-author">— Bobby Jones</span>
         </div>
         <div class="reveal">
             <div class="section-label">Features</div>
@@ -1419,6 +1680,10 @@
             "The more I practice, the luckier I get."
             <span class="quote-author">— Gary Player</span>
         </div>
+        <div class="bg-quote size-sm" style="bottom: 8%; right: 3%; transform: rotate(1.5deg);">
+            "Golf is 10% technique and 90% mental."
+            <span class="quote-author">— Annika Sorenstam</span>
+        </div>
         <div class="how-inner">
             <div class="reveal">
                 <div class="section-label">How It Works</div>
@@ -1475,6 +1740,10 @@
             "Reverse every natural instinct and you will<br>have a perfect golf swing."
             <span class="quote-author">— Ben Hogan</span>
         </div>
+        <div class="bg-quote size-sm hide-mobile" style="bottom: 10%; left: 2%; transform: rotate(-1.5deg);">
+            "Seve played shots I didn't even see in my dreams."
+            <span class="quote-author">— Lee Trevino on Seve Ballesteros</span>
+        </div>
         <div class="ghost-content">
             <div class="ghost-text reveal">
                 <div class="section-label">Ghost Mode</div>
@@ -1529,6 +1798,231 @@
         </div>
     </section>
 
+    <!-- BUILDER STORY -->
+    <section class="builder-section">
+        <!-- Background visuals -->
+        <div class="bg-visual hide-mobile" style="top: 15%; left: 3%;">
+            <svg width="160" height="160" viewBox="0 0 120 120">
+                <line x1="20" y1="100" x2="20" y2="20" class="angle-line"/>
+                <line x1="20" y1="100" x2="100" y2="50" class="angle-line"/>
+                <path d="M 20,60 A 40,40 0 0,1 55,78" class="angle-arc"/>
+                <text x="42" y="72" class="angle-text">38°</text>
+            </svg>
+        </div>
+        <div class="bg-visual" style="bottom: 10%; right: 5%;">
+            <svg width="200" height="200" viewBox="0 0 200 200">
+                <path d="M 180,180 Q 90,10 10,90" class="swing-arc"/>
+                <path d="M 185,175 Q 95,15 15,88" class="swing-arc accent"/>
+            </svg>
+        </div>
+
+        <div class="bg-quote size-sm hide-mobile" style="top: 12%; right: 8%; transform: rotate(2deg);">
+            "No matter how good you get, you can always get better."
+            <span class="quote-author">— Tiger Woods</span>
+        </div>
+        <div class="bg-quote size-md hide-mobile" style="bottom: 15%; left: -1%; transform: rotate(-2.5deg);">
+            "I'm going to be a better golfer tomorrow than I am today."
+            <span class="quote-author">— Jordan Spieth</span>
+        </div>
+
+        <div class="builder-inner reveal">
+            <div class="builder-avatar">⛳</div>
+            <h2>Built by a <em>high school golfer</em></h2>
+            <p class="builder-desc">
+                SwingCheck started as a personal project — I wanted a way to analyze my own swing without 
+                paying for expensive software. I'm a high school student building this from scratch using 
+                computer vision and AI. Every feature comes from what I wish I had on the driving range.
+            </p>
+            <div class="builder-tags">
+                <span class="builder-tag">🎓 High School Developer</span>
+                <span class="builder-tag">⛳ Competitive Golfer</span>
+                <span class="builder-tag">🤖 AI & Computer Vision</span>
+                <span class="builder-tag">🔨 Built from Scratch</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROADMAP -->
+    <section class="roadmap-section">
+        <!-- Background visuals -->
+        <div class="bg-visual" style="top: 8%; right: 2%;">
+            <svg width="250" height="300" viewBox="0 0 200 260">
+                <circle cx="50" cy="30" r="3.5" class="landmark-dot bright"/>
+                <circle cx="100" cy="20" r="3" class="landmark-dot"/>
+                <circle cx="150" cy="45" r="3.5" class="landmark-dot"/>
+                <circle cx="70" cy="80" r="3" class="landmark-dot bright"/>
+                <circle cx="130" cy="70" r="2.5" class="landmark-dot"/>
+                <circle cx="40" cy="140" r="3" class="landmark-dot"/>
+                <circle cx="110" cy="130" r="3.5" class="landmark-dot bright"/>
+                <circle cx="160" cy="155" r="3" class="landmark-dot"/>
+                <line x1="50" y1="30" x2="100" y2="20" class="landmark-connection"/>
+                <line x1="100" y1="20" x2="150" y2="45" class="landmark-connection"/>
+                <line x1="70" y1="80" x2="130" y2="70" class="landmark-connection"/>
+                <line x1="40" y1="140" x2="110" y2="130" class="landmark-connection"/>
+            </svg>
+        </div>
+        <div class="bg-visual hide-mobile" style="bottom: 15%; left: -3%;">
+            <svg width="300" height="250" viewBox="0 0 280 230">
+                <path d="M 260,220 Q 140,20 20,120" class="swing-arc"/>
+                <path d="M 268,215 Q 148,25 28,118" class="swing-arc accent"/>
+                <circle cx="260" cy="220" r="3.5" class="landmark-dot bright"/>
+            </svg>
+        </div>
+
+        <div class="bg-quote size-md hide-mobile" style="bottom: 8%; right: 5%; transform: rotate(2deg);">
+            "Achievement is largely the product of raising one's aspirations."
+            <span class="quote-author">— Jack Nicklaus</span>
+        </div>
+        <div class="bg-quote size-sm" style="top: 5%; left: 1%; transform: rotate(-1.5deg);">
+            "I'm always trying to get better, always trying to improve."
+            <span class="quote-author">— Rory McIlroy</span>
+        </div>
+
+        <div class="roadmap-inner">
+            <div class="reveal">
+                <div class="section-label">Roadmap</div>
+                <h2>What's coming next</h2>
+            </div>
+            <div class="roadmap-grid">
+                <div class="roadmap-card now reveal">
+                    <div class="roadmap-phase">Now</div>
+                    <h3>Current Release</h3>
+                    <ul class="roadmap-items">
+                        <li>AI pose detection & scoring</li>
+                        <li>Ghost mode (Tiger Woods)</li>
+                        <li>AI coaching with Gemini</li>
+                        <li>Drawing & annotation tools</li>
+                        <li>Frame-by-frame replay</li>
+                    </ul>
+                </div>
+                <div class="roadmap-card next reveal">
+                    <div class="roadmap-phase">Next Up</div>
+                    <h3>Coming Soon</h3>
+                    <ul class="roadmap-items">
+                        <li>More pro skeletons (Rory, Scottie, Nelly)</li>
+                        <li>Improved rotation metrics</li>
+                        <li>Side-by-side video comparison</li>
+                        <li>Shareable analysis cards</li>
+                        <li>Mobile-optimized UI redesign</li>
+                    </ul>
+                </div>
+                <div class="roadmap-card later reveal">
+                    <div class="roadmap-phase">Future</div>
+                    <h3>On the Horizon</h3>
+                    <ul class="roadmap-items">
+                        <li>Multi-angle analysis (DTL + face-on)</li>
+                        <li>Swing history & progress tracking</li>
+                        <li>Club detection & recommendations</li>
+                        <li>Community leaderboard</li>
+                        <li>Native mobile app</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section" id="faq">
+        <!-- Background visuals -->
+        <div class="bg-visual" style="top: 10%; right: 3%;">
+            <svg width="180" height="180" viewBox="0 0 140 140">
+                <line x1="20" y1="120" x2="120" y2="120" class="angle-line"/>
+                <line x1="20" y1="120" x2="80" y2="20" class="angle-line"/>
+                <path d="M 60,120 A 40,40 0 0,1 48,88" class="angle-arc"/>
+                <text x="55" y="105" class="angle-text">57°</text>
+                <circle cx="20" cy="120" r="3.5" class="landmark-dot bright"/>
+                <circle cx="80" cy="20" r="3" class="landmark-dot"/>
+            </svg>
+        </div>
+        <div class="bg-visual hide-mobile" style="bottom: 12%; left: 2%;">
+            <svg width="220" height="220" viewBox="0 0 200 200">
+                <path d="M 180,190 Q 80,20 10,100" class="swing-arc"/>
+                <circle cx="180" cy="190" r="3" class="landmark-dot bright"/>
+                <circle cx="10" cy="100" r="2.5" class="landmark-dot"/>
+            </svg>
+        </div>
+
+        <div class="bg-quote size-sm" style="bottom: 5%; left: 0%; transform: rotate(-2deg);">
+            "Golf is a science, the study of a lifetime."
+            <span class="quote-author">— David Forgan</span>
+        </div>
+        <div class="bg-quote size-md hide-mobile" style="top: 35%; right: -2%; transform: rotate(3deg);">
+            "If you watch a game, it's fun. If you play it, it's recreation. If you work at it, it's golf."
+            <span class="quote-author">— Bob Hope</span>
+        </div>
+        <div class="bg-quote size-sm hide-mobile" style="top: 60%; left: -1%; transform: rotate(-1deg);">
+            "For this game you need, above all, a tranquil frame of mind."
+            <span class="quote-author">— Harry Vardon</span>
+        </div>
+
+        <div class="faq-inner">
+            <div class="reveal">
+                <div class="section-label">FAQ</div>
+                <h2>Questions & answers</h2>
+            </div>
+
+            <div class="faq-item reveal">
+                <div class="faq-question">
+                    <h3>Is SwingCheck really free?</h3>
+                    <div class="faq-toggle">+</div>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes, completely free. No account, no credit card, no hidden fees. The app runs entirely in your browser using your device's processing power.</p>
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <div class="faq-question">
+                    <h3>What phone or camera do I need?</h3>
+                    <div class="faq-toggle">+</div>
+                </div>
+                <div class="faq-answer">
+                    <p>Any phone camera works — iPhone, Android, whatever you have. Just film your swing in decent lighting. Slo-mo mode helps but isn't required.</p>
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <div class="faq-question">
+                    <h3>How accurate is the analysis?</h3>
+                    <div class="faq-toggle">+</div>
+                </div>
+                <div class="faq-answer">
+                    <p>SwingCheck uses Google's MediaPipe to detect 33 body landmarks per frame. Metrics like tempo and swing plane are quite reliable. Rotation angles are estimated from 2D video and are best used for relative comparison, not absolute measurement.</p>
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <div class="faq-question">
+                    <h3>Does it work on desktop?</h3>
+                    <div class="faq-toggle">+</div>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes — it runs in any modern browser (Chrome, Safari, Firefox, Edge) on both mobile and desktop. Upload a video from your phone's camera roll or from your computer.</p>
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <div class="faq-question">
+                    <h3>What is ghost mode?</h3>
+                    <div class="faq-toggle">+</div>
+                </div>
+                <div class="faq-answer">
+                    <p>Ghost mode overlays a pro golfer's real skeleton data onto your swing replay. It scales to your body proportions so you can see exactly where your positions differ at each phase of the swing.</p>
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <div class="faq-question">
+                    <h3>Is my video uploaded anywhere?</h3>
+                    <div class="faq-toggle">+</div>
+                </div>
+                <div class="faq-answer">
+                    <p>No. Everything runs locally in your browser. Your video never leaves your device — all pose detection and analysis happens on your phone or computer.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA / WAITLIST -->
     <section class="cta-section" id="waitlist">
         <!-- Large swing arc -->
@@ -1561,6 +2055,10 @@
         <div class="bg-quote size-lg hide-mobile" style="top: 15%; left: -2%; transform: rotate(-3deg); color: rgba(255,255,255,0.07);">
             "Golf is deceptively simple and endlessly complicated."
             <span class="quote-author">— Arnold Palmer</span>
+        </div>
+        <div class="bg-quote size-sm" style="bottom: 8%; right: 3%; transform: rotate(2deg); color: rgba(255,255,255,0.05);">
+            "Pressure makes me more intent about each shot."
+            <span class="quote-author">— Nancy Lopez</span>
         </div>
         <div class="cta-inner reveal">
             <h2>Ready to improve your swing?</h2>
@@ -1702,6 +2200,18 @@
         }, { threshold: 0.3 });
 
         document.querySelectorAll('.ghost-comparison').forEach(el => ghostObserver.observe(el));
+
+        // FAQ accordion
+        document.querySelectorAll('.faq-question').forEach(q => {
+            q.addEventListener('click', () => {
+                const item = q.parentElement;
+                const wasOpen = item.classList.contains('open');
+                // Close all
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+                // Toggle clicked
+                if (!wasOpen) item.classList.add('open');
+            });
+        });
     </script>
 </body>
 </html>
